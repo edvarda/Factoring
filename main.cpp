@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "constants.h"
+#include "trialdivision.h"
 
 int main(int argc, const char * argv[]) {
     
@@ -30,25 +31,32 @@ int main(int argc, const char * argv[]) {
     
     std::ifstream in;
     if (fileIn) {
-        in = std::ifstream("../../../../testfiles/factortest.in");
+        in = std::ifstream("../../../../testfiles/easytest.in");
         std::cin.rdbuf(in.rdbuf());
     }
     
-    mpz_t N;
-    int flag;
-    mpz_init(N);
-    mpz_set_ui(N,0);
+    mpz_class N;
     
     char s[100];
     while (std::cin.getline(s,100)) {
-        flag = mpz_set_str(N,s, 10);
-        assert (flag == 0); /* If flag is not 0 then the operation failed */
-        std::cout << N << std::endl;
+        try {
+            N = mpz_class(s);
+        } catch (std::invalid_argument) {
+            
+        }
+        if (mpz_probab_prime_p (N.get_mpz_t(), 15)) {
+            std::cout << N << std::endl;
+        } else {
+            try {
+                std::vector<mpz_class> *factors = trialdivision(N);
+                for (auto it = factors->begin(); it != factors->end(); ++it) {
+                    std::cout << *it << std::endl;
+                }
+            } catch (const char* msg) {
+                std::cout << msg << std::endl;
+            }
+        }
+        std::cout << std::endl;
     }
-    
-    std::cout << "Hello, Worldz! " << PI[2] << "\n";
-    
-    
-    
     return 0;
 }
