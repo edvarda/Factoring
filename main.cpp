@@ -27,11 +27,11 @@ int main(int argc, const char * argv[]) {
     
     //TODO make into macro definition
     const bool debug = false; // DEBUG FLAG
-    const bool fileIn = true; // REDIRECT FILE TO STDIN
+    const bool fileIn = false; // REDIRECT FILE TO STDIN
     
     std::ifstream in;
     if (fileIn) {
-        in = std::ifstream("../../../../testfiles/easytest.in");
+        in = std::ifstream("../../../../testfiles/factortest.in");
         std::cin.rdbuf(in.rdbuf());
     }
     
