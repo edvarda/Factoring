@@ -16,7 +16,7 @@
 
 #include "constants.h"
 
-std::vector<mpz_class>* trialdivision(mpz_class &N);
+std::vector<mpz_class>* trialdivision(mpz_class &N, std::vector<mpz_class> *factors);
 
 #endif /* trialdivision_h */
 

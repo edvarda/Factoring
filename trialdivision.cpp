@@ -9,8 +9,8 @@
 
 #include "trialdivision.h"
 
-std::vector<mpz_class>* trialdivision(mpz_class &N) {
-    std::vector<mpz_class> *factors = new std::vector<mpz_class>();
+std::vector<mpz_class>* trialdivision(mpz_class &N, std::vector<mpz_class> *factors) {
+    // TODO use: void mpz_nextprime (mpz_t rop, const mpz_t op)
     for (auto p : PI) {
         if (p > sqrt(N)) { break; }
         while(N % p == 0) {
