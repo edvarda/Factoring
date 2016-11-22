@@ -14,8 +14,11 @@
 
 #include "constants.h"
 #include "trialdivision.h"
+
 #include "pollard.h"
 
+
+//Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
 int main(int argc, const char * argv[]) {
     
     //TODO tidy if working
@@ -30,7 +33,7 @@ int main(int argc, const char * argv[]) {
     randoCalrissian.seed(mpz_class(time(NULL)));
     
     std::ifstream in;
-    if (FILEINFLAG) {
+    if (debug) {
         in = std::ifstream("../../../../testfiles/factortest.in");
         std::cin.rdbuf(in.rdbuf());
     }
