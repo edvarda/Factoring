@@ -14,8 +14,11 @@
 
 #include "constants.h"
 #include "trialdivision.h"
+
 #include "pollard.h"
 
+
+//Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
 int main(int argc, const char * argv[]) {
     
     // Declare, init and see a random generator. (Default is based on mersenne twister engine)
@@ -24,7 +27,7 @@ int main(int argc, const char * argv[]) {
     
     // This block makes it easier to run tests in Xcode
     std::ifstream in;
-    if (FILEINFLAG) {
+    if (debug) {
         in = std::ifstream("../../../../testfiles/factortest.in");
         std::cin.rdbuf(in.rdbuf());
     }
