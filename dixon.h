@@ -16,6 +16,7 @@
 #include "constants.h"
 #include "trialdivision.h"
 
-std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *factors);
+std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *factors,
+                                    gmp_randclass &randoCalrissian);
 
 #endif /* dixons_h */

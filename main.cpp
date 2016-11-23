@@ -16,6 +16,7 @@
 #include "trialdivision.h"
 
 #include "pollard.h"
+#include "dixon.h"
 
 
 //Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
@@ -29,7 +30,7 @@ int main(int argc, const char * argv[]) {
     const bool debug = false; // DEBUG FLAG
     //const bool fileIn = true; // REDIRECT FILE TO STDIN
     
-    gmp_randclass randoCalrissian(gmp_randinit_default);
+    gmp_randclass randoCalrissian(gmp_randinit_default); //Ba-dum-tss
     randoCalrissian.seed(mpz_class(time(NULL)));
     
     std::ifstream in;
@@ -65,7 +66,8 @@ int main(int argc, const char * argv[]) {
             
             while (true) {
                 try {
-                    factors = pollardsrho(N, factors, randoCalrissian);
+                    //factors = pollardsrho(N, factors, randoCalrissian);
+                    factors = dixonFactorer(N, factors, randoCalrissian);
                     for (auto it = factors->begin(); it != factors->end(); ++it) {
                         std::cout << *it << std::endl;
                     }
