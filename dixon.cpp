@@ -18,10 +18,10 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
     gmp_printf("in dixon.\n");
     gmp_printf("N: %Zd \n", N);
 
-	mpz_class a,b,k;
+	mpz_class a,b,bBiggestFact,k;
 
 	k = 20; //TODO: determinte what k should be.
-
+	bBiggestFact = 1; //Scrap value;
 
 	//1. Randomly select a in Zn.
 	a = randoCalrissian.get_z_range(N); //TODO:Make it possibly negative as well
@@ -37,7 +37,19 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 
 	//3. Check if b is k-smooth.
 	//A positive integer is called k-smooth if none of its prime factors is greater than k.
-	
+	std::vector<mpz_class> *factorsOfB = new std::vector<mpz_class>();
+	factorsOfB = trialdivision(b, factorsOfB);
+	for (auto it = factorsOfB->begin(); it != factorsOfB->end(); ++it) {
+		if (*it > bBiggestFact){
+			bBiggestFact = *it;
+		}
+        std::cout << *it << std::endl; // Print factors
+    }
+    gmp_printf("biggest factor in b: %Zd \n", bBiggestFact);
+
+    if(bBiggestFact < k){
+    	gmp_printf("b is k-smooth!!! \n");
+    }
 
 
 
