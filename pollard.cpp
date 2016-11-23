@@ -28,40 +28,27 @@ std::vector<mpz_class>* pollardsrho(mpz_class &N, std::vector<mpz_class> *factor
         return trialdivision(N, factors); // TODO Change return type to void
     }
     
-//    while (N % 2 != 1 && !mpz_probab_prime_p (N.get_mpz_t(), 15) ) {
-//        N = N/2;
-//        factors->push_back(mpz_class(2));
-//    }
-
     mpz_class x,y,c,p;
     
     x = randoCalrissian.get_z_range(N-1)+1; // Get random from [0,N) @Edvard, en av dessa två kommentarer bör vara fel?
     c = randoCalrissian.get_z_range(N-1)+1; // Get random from [1,N) @Edvard, en av dessa två kommentarer bör vara fel?
     y = x;
-//    std::cerr << "Top level N: " << N.get_mpz_t() << std::endl;
-//    std::cerr << "c: " << c.get_mpz_t() << std::endl;
     while (true) {
         x = f(x,c,N);
         y = f(f(y,c,N),c,N);
-        
-//        std::cerr << "x: " << x.get_mpz_t() << std::endl;
-//        std::cerr << "y: " << y.get_mpz_t() << std::endl;
         
         if (x == y) {
             break;
         }
         
         p = gcd(abs(x-y),N);
-        //std::cerr << "P: " << p.get_mpz_t() << std::endl;
         if (p > 1) { // Found a factor p, so that p|N
 
+            // Is factor p prime or not?
             if (mpz_probab_prime_p (p.get_mpz_t(), 15)) {
                 factors->push_back(p);
-                //std::cerr << "Found prime factor: " << p.get_mpz_t() << std::endl;
             } else { //TODO Will this throwing a "fail" result in an error?
                      //Possible mismatch between N and factors
-                
-                //std::cerr << "Found non-prime factor: " << p.get_mpz_t() << std::endl;
                 mpz_class pnp(p); // Use pnp = p, so we still have a copy of p
                 while (true) { // TODO subject this subroutine to a deadline?
                                // Feels unneccessary since p <= sqrt(N)
@@ -73,29 +60,14 @@ std::vector<mpz_class>* pollardsrho(mpz_class &N, std::vector<mpz_class> *factor
                     }
                 }
             }
-            // Divide N by p, since we made sure factors contain all prime factors of p
-            N = N/p;
-            
-            //std::cerr << "New N: " << N.get_mpz_t() << std::endl;
-            
-            //TODO kolla om p delar N mer än en gång
-            //return pollardsrho(N,factors,randoCalrissian); // Found a factor, make recursive call
-//            if (mpz_probab_prime_p (N.get_mpz_t(), 15)) {
-//                factors->push_back(N);
-////                std::cerr << "Final factor: " << N.get_mpz_t() << std::endl;
-////                std::cerr << "---------------------------" << std::endl;
-//                return factors;
-//            }
-//            
-//            x = randoCalrissian.get_z_range(N-1)+1; // Get random from [2,N)
-//            c = randoCalrissian.get_z_range(N-1)+1; // Get random from [1,N)
-//            y = f(x,c,N);
+
+            N /= p; // Divide N by p, since we made sure factors contain all prime factors of p
             break;
         }
         
     };
 
-    return pollardsrho(N,factors, randoCalrissian);
-    //throw "fail";
+    //return pollardsrho(N,factors, randoCalrissian);
+    throw "fail";
 }
 
