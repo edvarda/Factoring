@@ -16,13 +16,21 @@
 #include "trialdivision.h"
 
 #include "pollard.h"
+#include "dixon.h"
 
 
 //Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
 int main(int argc, const char * argv[]) {
     
-    // Declare, init and see a random generator. (Default is based on mersenne twister engine)
-    gmp_randclass randoCalrissian(gmp_randinit_default);
+    //TODO tidy if working
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_time =
+    std::chrono::high_resolution_clock::now();
+    
+    //TODO make into macro definition
+    const bool debug = false; // DEBUG FLAG
+    //const bool fileIn = true; // REDIRECT FILE TO STDIN
+    
+    gmp_randclass randoCalrissian(gmp_randinit_default); //Ba-dum-tss
     randoCalrissian.seed(mpz_class(time(NULL)));
     
     // This block makes it easier to run tests in Xcode
@@ -58,7 +66,8 @@ int main(int argc, const char * argv[]) {
             
             while (true) {
                 try {
-                    factors = pollardsrho(N, factors, randoCalrissian);
+                    //factors = pollardsrho(N, factors, randoCalrissian);
+                    factors = dixonFactorer(N, factors, randoCalrissian);
                     for (auto it = factors->begin(); it != factors->end(); ++it) {
                         std::cout << *it << std::endl; // Print factors
                     }

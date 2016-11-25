@@ -30,8 +30,8 @@ std::vector<mpz_class>* pollardsrho(mpz_class &N, std::vector<mpz_class> *factor
     
     mpz_class x,y,c,p;
     
-    x = randoCalrissian.get_z_range(N-1)+1; // Get random from [0,N)
-    c = randoCalrissian.get_z_range(N-1)+1; // Get random from [1,N)
+    x = randoCalrissian.get_z_range(N-1)+1; // Get random from [0,N) @Edvard, en av dessa två kommentarer bör vara fel?
+    c = randoCalrissian.get_z_range(N-1)+1; // Get random from [1,N) @Edvard, en av dessa två kommentarer bör vara fel?
     y = x;
     while (true) {
         x = f(x,c,N);
