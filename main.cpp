@@ -27,7 +27,7 @@ int main(int argc, const char * argv[]) {
     
     // This block makes it easier to run tests in Xcode
     std::ifstream in;
-    if (debug) {
+    if (FILEINFLAG) {
         in = std::ifstream("../../../../testfiles/factortest.in");
         std::cin.rdbuf(in.rdbuf());
     }
