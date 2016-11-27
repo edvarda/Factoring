@@ -38,7 +38,7 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	    }
 	    gmp_printf("biggest factor in PZ: %Zd \n", biggestFactorInPZ);
 
-	    if(biggestFactorInPZ <= B){
+	    if(biggestFactorInPZ <= B && biggestFactorInPZ != 1){
 	    	gmp_printf("pz is B-smooth!!! \n");
 	    	allZ->push_back(z);
 	    	allPZ->push_back(pz);
@@ -48,25 +48,25 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	    	gmp_printf("incrementing the matrix \n");
 	    	for (auto it = factorsOfPZ->begin(); it != factorsOfPZ->end(); ++it) {
 				if (*it == 2){
-	    			vMatrix[pairs][0]++;
+	    			vMatrix[0][pairs]++;
 				}
 				else if (*it == 3){
-	    			vMatrix[pairs][1]++;
+	    			vMatrix[1][pairs]++;
 				}
 				else if (*it == 5){
-	    			vMatrix[pairs][2]++;
+	    			vMatrix[2][pairs]++;
 				}
 				else if (*it == 7){
-	    			vMatrix[pairs][3]++;
-				}
-				gmp_printf("debugg \n");
-				for(int i = 0 ; i < P.size() ; i++){
-					for(int j = 0 ; j < P.size() ; j++){
-						gmp_printf("%Zd; " , vMatrix[i][j]);
-					}
-					gmp_printf("\n");
+	    			vMatrix[3][pairs]++;
 				}
 		    }
+		    gmp_printf("debugg \n");
+			for(int i = 0 ; i < P.size() ; i++){
+				for(int j = 0 ; j < P.size() ; j++){
+					gmp_printf("%Zd; " , vMatrix[i][j]);
+				}
+				gmp_printf("\n");
+			}
 		    pairs++;
 	    }
 
@@ -78,16 +78,73 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 
 	}
 
-		gmp_printf("debugg \n");
+		gmp_printf("The exponent Matrix \n");
 		for(int i = 0 ; i < P.size() ; i++){
 			for(int j = 0 ; j < P.size() ; j++){
 				gmp_printf("%Zd; " , vMatrix[i][j]);
 			}
 			gmp_printf("\n");
 		}
+		gmp_printf("Now in mod 2 \n");
+		for(int i = 0 ; i < P.size() ; i++){
+			for(int j = 0 ; j < P.size() ; j++){
+				vMatrix[i][j] = vMatrix[i][j] %2;
+				gmp_printf("%Zd; " , vMatrix[i][j]);
+			}
+			gmp_printf("\n");
+		}
 
 
+		//Lets gaussitup!
+		// Could the timecomplexity here be changed easily
+		int rowGaussIndex = -1;
+	    for(int i = 0 ; i < vMatrix.size() ; i++){
+	    	for(int j = 0 ; j < vMatrix.size() ; j++){
+		    	if(vMatrix[j][i] == 1){
+		    		rowGaussIndex = j;
+		    		break;
+		    	}
+		    }
 
+		    if(rowGaussIndex != -1){
+		    	//We now have a row with a 1 in the position we currently want to gauss away.
+		    	for(int j = 0 ; j < vMatrix.size() ; j++){
+		    		if(vMatrix[j][i]== 1){
+
+		    			if(j != rowGaussIndex){
+		    				for(int k = 0 ; k < vMatrix.size() ; k++ ){
+		    					if(vMatrix[rowGaussIndex][k] == 1){
+			    						if(vMatrix[j][k] == 0) {
+				    					vMatrix[j][k] = 1;
+				    				} else {
+				    					vMatrix[j][k] = 0;
+				    				}
+		    					}
+			    			}
+		    			}
+		    			
+		    		}
+		    	}
+		    }
+
+		    gmp_printf("round: %d \n", i);
+			for(int i = 0 ; i < P.size() ; i++){
+				for(int j = 0 ; j < P.size() ; j++){
+					vMatrix[i][j] = vMatrix[i][j] %2;
+					gmp_printf("%Zd; " , vMatrix[i][j]);
+				}
+				gmp_printf("\n");
+			}
+		    rowGaussIndex = -1;
+	    }
+	    gmp_printf("Now hopefully Gaussed \n");
+		for(int i = 0 ; i < P.size() ; i++){
+			for(int j = 0 ; j < P.size() ; j++){
+				vMatrix[i][j] = vMatrix[i][j] %2;
+				gmp_printf("%Zd; " , vMatrix[i][j]);
+			}
+			gmp_printf("\n");
+		}
 
 	    gmp_printf("All z's \n");
 	 	for (auto it = allZ->begin(); it != allZ->end(); ++it) {
@@ -98,15 +155,13 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	        std::cout << *it << std::endl; // Print factors
 	    }
 
+
+
+
+	   
+
     return 0;
 }
-
-
-
-
-
-
-
 
 
 
