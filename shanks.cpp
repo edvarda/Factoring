@@ -10,164 +10,145 @@
 
 std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *factors,
                                     gmp_randclass &randoCalrissian) {
-	gmp_printf("---------------------------------- \n");
 
-	mpz_class k = 1; //For now we just chose a k.
-	mpz_class perfectSquareCriterion = 0;
-	//Initialize p0, q0, q1 to the things they should be.
-	mpz_class candidate, p0, q0, q1, b0, pCurr, pPrev, qNext, qCurr, qPrev, bCurr, bPrev, tmp, iCounter;
-	mpf_class qCurrSqrt;
-
-	mpz_t miscMpz;
-	mpz_init(miscMpz);
-	mpf_t miscMpf;
-	mpf_init(miscMpf);
-	int numberOfDigits = 7;
-
-	tmp = k * N;
-	gmp_printf("k * N: %Zd \n", tmp);
-	mpz_sqrt(p0.get_mpz_t(), tmp.get_mpz_t());
 	
+	for(int param = 1 ; param < 5 ; param++){
+		mpz_class k = param; //For now we just chose a k.
+		mpz_class perfectSquareCriterion = 0;
+		//Initialize p0, q0, q1 to the things they should be.
+		mpz_class candidate, p0, q0, q1, b0, pCurr, pPrev, qNext, qCurr, qPrev, bCurr, bPrev, tmp, iCounter;
+		mpf_class qCurrSqrt;
 
+		mpz_t miscMpz;
+		mpz_init(miscMpz);
+		mpf_t miscMpf;
+		mpf_init(miscMpf);
+		int numberOfDigits = 7;
 
-	q0 = 1;
-	mpz_pow_ui(tmp.get_mpz_t(), p0.get_mpz_t(), 2);
-	q1 = k*N - tmp;
-
-
-
-
-	//Init of first repeat step.
-	pPrev = p0;
-	qCurr = q1;
-	qPrev = q0;
-	gmp_printf("pPrev: %Zd \n", pPrev);
-
-
-	bCurr = p0 + pPrev;
-	gmp_printf("bi: %Zd \n", bCurr);
-	bCurr = bCurr / qCurr;
-	gmp_printf("bi: %Zd \n", bCurr);
-	pCurr = bCurr * qCurr - pPrev;
-	qNext = qPrev + bCurr * (pPrev-pCurr);
-
-	perfectSquareCriterion =  mpz_perfect_square_p(qCurr.get_mpz_t());
-	while(true){
-		perfectSquareCriterion = 0; //Reset perfectSquareCriterion;
-		gmp_printf("ANS------------------------------ \n");
-		gmp_printf("pCurr: %Zd \n", pCurr);
-		gmp_printf("qCurr: %Zd \n", qCurr);
-		gmp_printf("qNext: %Zd \n", qNext);
-		//Set forward indexs.
-		pPrev = pCurr;
-		qPrev = qCurr;
-		qCurr = qNext;
+		tmp = k * N;
+		mpz_sqrt(p0.get_mpz_t(), tmp.get_mpz_t());
 		
-		//Do calculations
-		bCurr = p0 + pPrev;		
+
+
+		q0 = 1;
+		mpz_pow_ui(tmp.get_mpz_t(), p0.get_mpz_t(), 2);
+		q1 = k * N - tmp;
+
+
+
+
+		//Init of first repeat step.
+		pPrev = p0;
+		qCurr = q1;
+		qPrev = q0;
+		bCurr = p0 + pPrev;
 		bCurr = bCurr / qCurr;
-		pCurr = bCurr * qCurr;
-		pCurr = pCurr - pPrev;
+		pCurr = bCurr * qCurr - pPrev;
 		qNext = qPrev + bCurr * (pPrev-pCurr);
 
-		
 		perfectSquareCriterion =  mpz_perfect_square_p(qCurr.get_mpz_t());
-		if(perfectSquareCriterion != 0 && (iCounter%2) == 0){
-			gmp_printf("perfectSquareCriterion and even iteration fullfilled \n");
-			break;
-		}
-		iCounter++; //Todo check whilel criteria.
-	}
+		while(true){
+			perfectSquareCriterion = 0; //Reset perfectSquareCriterion;
+			//gmp_printf("ANS------------------------------ \n");
+			//gmp_printf("pCurr: %Zd \n", pCurr);
+			//gmp_printf("qCurr: %Zd \n", qCurr);
+			//gmp_printf("qNext: %Zd \n", qNext);
+			//Set forward indexs.
+			pPrev = pCurr;
+			qPrev = qCurr;
+			qCurr = qNext;
+			
+			//Do calculations
+			bCurr = p0 + pPrev;		
+			bCurr = bCurr / qCurr;
+			pCurr = bCurr * qCurr;
+			pCurr = pCurr - pPrev;
+			qNext = qPrev + bCurr * (pPrev-pCurr);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-	gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-	gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-
-	//Yaaaaaaaaaaay we found a perfect square on an even iteration! Now initiate phace two!
-	mpf_class p0f(p0), q0f(q0), q1f(q1), b0f(b0), pCurrf(pCurr), pPrevf(pPrev), 
-	qNextf(qNext), qCurrf(qCurr), qPrevf(qPrev), bCurrf(bCurr), bPrevf(bPrev), 
-	qCurrSqrtf, tmpf;
-
-
-
-	//Initializing stuff for second loop.
-	b0f = p0f - pPrevf; //Prolly wrong.
-	mpf_sqrt(qCurrSqrtf.get_mpf_t(), qCurrf.get_mpf_t());
-	b0f /= qCurrSqrtf;
-	b0f = floor(b0f);
-
-	p0f = b0f * qCurrSqrtf + pPrevf;
-
-	q0f = qCurrSqrtf;
-
-	mpf_pow_ui (tmpf.get_mpf_t(), p0f.get_mpf_t(), 2);
-	q1f = (k * N - tmpf) / q0f;
-
-	gmp_printf("ANS------------------------------ \n");
-	gmp_printf ("p0f:  %.*Ff \n", numberOfDigits, p0f);
-	gmp_printf ("q0f:  %.*Ff \n", numberOfDigits, q0f);
-	gmp_printf ("q1f:  %.*Ff \n", numberOfDigits, q1f);
-
-
-	pPrevf = p0f;
-	qPrevf = q0f;
-	qCurrf = q1f;
-
-	//Second loop.
-	//while(true){
-	for(int i = 0 ; i < 4 ; i++) {
-		bCurrf = (p0f + pPrevf) / qCurrf;
-		bCurrf = floor(bCurrf);
-
-		pCurrf = bCurrf * qCurrf - pPrevf;
-
-		qNextf = qPrevf + bCurrf * (pPrevf - pCurrf);
-
-
-
-		gmp_printf("ANS------------------------------ \n");
-		gmp_printf ("pPrevf:  %.*Ff \n", numberOfDigits, pPrevf);
-		gmp_printf ("qCurrf:  %.*Ff \n", numberOfDigits, qCurrf);
-		gmp_printf ("qNextf:  %.*Ff \n", numberOfDigits, qNextf);
-
-		if(pCurrf == pPrevf){
-			gmp_printf("criterion met! We should now have a gcd-able value in pCurrf \n");
-			break;
+			
+			perfectSquareCriterion =  mpz_perfect_square_p(qCurr.get_mpz_t());
+			if(perfectSquareCriterion != 0 && (iCounter%2) == 0){
+				//gmp_printf("perfectSquareCriterion and even iteration fullfilled \n");
+				break;
+			}
+			iCounter++; //Todo check whilel criteria.
 		}
 
-		pPrevf = pCurrf;
-		qPrevf = qCurrf;
-		qCurrf = qNextf;
+		//gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
+		//gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
+		//gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
+
+		//Yaaaaaaaaaaay we found a perfect square on an even iteration! Now initiate phace two!
+		mpf_class p0f(p0), q0f(q0), q1f(q1), b0f(b0), pCurrf(pCurr), pPrevf(pPrev), 
+		qNextf(qNext), qCurrf(qCurr), qPrevf(qPrev), bCurrf(bCurr), bPrevf(bPrev), 
+		qCurrSqrtf, tmpf;
+
+
+
+		//Initializing stuff for second loop.
+		b0f = p0f - pPrevf; //Prolly wrong.
+		mpf_sqrt(qCurrSqrtf.get_mpf_t(), qCurrf.get_mpf_t());
+		b0f /= qCurrSqrtf;
+		b0f = floor(b0f);
+
+		p0f = b0f * qCurrSqrtf + pPrevf;
+
+		q0f = qCurrSqrtf;
+
+		mpf_pow_ui (tmpf.get_mpf_t(), p0f.get_mpf_t(), 2);
+		q1f = (k * N - tmpf) / q0f;
+
+		//gmp_printf("ANS------------------------------ \n");
+		//gmp_printf ("p0f:  %.*Ff \n", numberOfDigits, p0f);
+		//gmp_printf ("q0f:  %.*Ff \n", numberOfDigits, q0f);
+		//gmp_printf ("q1f:  %.*Ff \n", numberOfDigits, q1f);
+
+
+		pPrevf = p0f;
+		qPrevf = q0f;
+		qCurrf = q1f;
+
+		//Second loop.
+		//while(true){
+		for(int i = 0 ; i < 4 ; i++) {
+			bCurrf = (p0f + pPrevf) / qCurrf;
+			bCurrf = floor(bCurrf);
+
+			pCurrf = bCurrf * qCurrf - pPrevf;
+
+			qNextf = qPrevf + bCurrf * (pPrevf - pCurrf);
+
+
+
+			//gmp_printf("ANS------------------------------ \n");
+			//gmp_printf ("pPrevf:  %.*Ff \n", numberOfDigits, pPrevf);
+			//gmp_printf ("qCurrf:  %.*Ff \n", numberOfDigits, qCurrf);
+			//gmp_printf ("qNextf:  %.*Ff \n", numberOfDigits, qNextf);
+
+			if(pCurrf == pPrevf){
+				break;
+			}
+
+			pPrevf = pCurrf;
+			qPrevf = qCurrf;
+			qCurrf = qNextf;
+		}
+		mpz_class elementToTry(pCurrf);
+		mpz_gcd (candidate.get_mpz_t(), N.get_mpz_t(), elementToTry.get_mpz_t());
+		//gmp_printf("candidate: %Zd \n", candidate);
+
+		if(candidate != N && candidate != 1){
+			//We have found a non trivial with factor! :D 
+			N = N/candidate;
+			factors->push_back(candidate);
+			//gmp_printf("returning------------------------------ \n");
+		}
+
+
+
+		//gmp_printf("inb4 crash \n");
 	}
-	mpz_class elementToTry(pCurrf);
-	mpz_gcd (candidate.get_mpz_t(), N.get_mpz_t(), elementToTry.get_mpz_t());
-	gmp_printf("candidate: %Zd \n", candidate);
-
-	if(candidate != N && candidate != 1){
-		//We have found a non trivial with factor! :D 
-		N = N/candidate;
-		factors->push_back(candidate);
-        return factors;
-	}
-
-
-
-	gmp_printf("inb4 crash \n");
-    return factors;
+    return trialdivision(N, factors);
 }
 
 
