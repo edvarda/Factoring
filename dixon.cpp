@@ -15,11 +15,13 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	B = 7;
 	//Get the factorbase P which is all primes smaller than B
 	std::vector<mpz_class> P = {2, 3, 5, 7};
-	std::vector<mpz_class> *allZ = new std::vector<mpz_class>(P.size());
-	std::vector<mpz_class> *allPZ = new std::vector<mpz_class>(P.size());
-	std::vector<std::vector<mpz_class> > vMatrix(P.size(), std::vector<mpz_class>(P.size()));
+
+	int numberOFRelations = P.size()+1;
+	std::vector<mpz_class> *allZ = new std::vector<mpz_class>(numberOFRelations);
+	std::vector<mpz_class> *allPZ = new std::vector<mpz_class>(numberOFRelations);
+	std::vector<std::vector<mpz_class> > vMatrix(P.size(), std::vector<mpz_class>(numberOFRelations));
 	//Next, we search for positive integers z such that z^2 mod N is B-smooth.
-	for(int pairs = 0 ; pairs < P.size() ;){
+	for(int pairs = 0 ; pairs < numberOFRelations ;){
 		gmp_printf("---------------------------------- \n");
 		mpz_class z, pz, pzTemp;
 		z = randoCalrissian.get_z_range(N); //Perhaps these should be only up to sqrt(N)?
@@ -62,7 +64,7 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 		    }
 		    gmp_printf("debugg \n");
 			for(int i = 0 ; i < P.size() ; i++){
-				for(int j = 0 ; j < P.size() ; j++){
+				for(int j = 0 ; j < numberOFRelations ; j++){
 					gmp_printf("%Zd; " , vMatrix[i][j]);
 				}
 				gmp_printf("\n");
@@ -79,15 +81,15 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	}
 
 		gmp_printf("The exponent Matrix \n");
-		for(int i = 0 ; i < P.size() ; i++){
-			for(int j = 0 ; j < P.size() ; j++){
+		for(int i = 0 ; i < vMatrix.size() ; i++){
+			for(int j = 0 ; j < vMatrix[0].size() ; j++){
 				gmp_printf("%Zd; " , vMatrix[i][j]);
 			}
 			gmp_printf("\n");
 		}
 		gmp_printf("Now in mod 2 \n");
-		for(int i = 0 ; i < P.size() ; i++){
-			for(int j = 0 ; j < P.size() ; j++){
+		for(int i = 0 ; i < vMatrix.size() ; i++){
+			for(int j = 0 ; j < vMatrix[0].size() ; j++){
 				vMatrix[i][j] = vMatrix[i][j] %2;
 				gmp_printf("%Zd; " , vMatrix[i][j]);
 			}
@@ -95,13 +97,16 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 		}
 
 
-		//Lets gaussitup!
-		// Could the timecomplexity here be changed easily
+		
 		int rowGaussIndex = -1;
+		std::vector<int> usedRow (vMatrix.size());
+		gmp_printf("debugg1 \n");
+
 	    for(int i = 0 ; i < vMatrix.size() ; i++){
 	    	for(int j = 0 ; j < vMatrix.size() ; j++){
-		    	if(vMatrix[j][i] == 1){
+		    	if(vMatrix[j][i] == 1 && usedRow[j] == 0){
 		    		rowGaussIndex = j;
+		    		usedRow[rowGaussIndex] = 1;
 		    		break;
 		    	}
 		    }
@@ -109,12 +114,11 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 		    if(rowGaussIndex != -1){
 		    	//We now have a row with a 1 in the position we currently want to gauss away.
 		    	for(int j = 0 ; j < vMatrix.size() ; j++){
-		    		if(vMatrix[j][i]== 1){
-
-		    			if(j != rowGaussIndex){
-		    				for(int k = 0 ; k < vMatrix.size() ; k++ ){
-		    					if(vMatrix[rowGaussIndex][k] == 1){
-			    						if(vMatrix[j][k] == 0) {
+		    		if(vMatrix[j][i] == 1){ // If it is a 1 in a column we want to gauus away.
+		    			if(j != rowGaussIndex){ // We do not gauss a row from itself
+		    				for(int k = 0 ; k < vMatrix[0].size() ; k++ ){ 
+		    					if(vMatrix[rowGaussIndex][k] == 1){ //We check if the row we are using as gausser has a 1 in the right place.
+			    						if(vMatrix[j][k] == 0) { 
 				    					vMatrix[j][k] = 1;
 				    				} else {
 				    					vMatrix[j][k] = 0;
@@ -128,18 +132,18 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 		    }
 
 		    gmp_printf("round: %d \n", i);
-			for(int i = 0 ; i < P.size() ; i++){
-				for(int j = 0 ; j < P.size() ; j++){
-					vMatrix[i][j] = vMatrix[i][j] %2;
-					gmp_printf("%Zd; " , vMatrix[i][j]);
+			for(int i2 = 0 ; i2 < vMatrix.size() ; i2++){
+				for(int j2 = 0 ; j2 < vMatrix[0].size() ; j2++){
+					vMatrix[i2][j2] = vMatrix[i2][j2] %2;
+					gmp_printf("%Zd; " , vMatrix[i2][j2]);
 				}
 				gmp_printf("\n");
 			}
 		    rowGaussIndex = -1;
 	    }
 	    gmp_printf("Now hopefully Gaussed \n");
-		for(int i = 0 ; i < P.size() ; i++){
-			for(int j = 0 ; j < P.size() ; j++){
+		for(int i = 0 ; i < vMatrix.size() ; i++){
+			for(int j = 0 ; j < vMatrix[0].size() ; j++){
 				vMatrix[i][j] = vMatrix[i][j] %2;
 				gmp_printf("%Zd; " , vMatrix[i][j]);
 			}

@@ -17,7 +17,7 @@
 
 #include "pollard.h"
 #include "dixon.h"
-
+#include "shanks.h"
 
 //Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
 int main(int argc, const char * argv[]) {
@@ -67,7 +67,7 @@ int main(int argc, const char * argv[]) {
             while (true) {
                 try {
                     //factors = pollardsrho(N, factors, randoCalrissian);
-                    factors = dixonFactorer(N, factors, randoCalrissian);
+                    factors = shanksFactorer(N, factors, randoCalrissian);
                     for (auto it = factors->begin(); it != factors->end(); ++it) {
                         std::cout << *it << std::endl; // Print factors
                     }
