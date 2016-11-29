@@ -1,5 +1,5 @@
 //
-//  dixon.cpp
+//  shanks.cpp
 //  Factoring
 //
 //  Created by Edvard Ahlsén on 20/11/16.
@@ -49,10 +49,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		perfectSquareCriterion =  mpz_perfect_square_p(qCurr.get_mpz_t());
 		while(true){
 			perfectSquareCriterion = 0; //Reset perfectSquareCriterion;
-			//gmp_printf("ANS------------------------------ \n");
-			//gmp_printf("pCurr: %Zd \n", pCurr);
-			//gmp_printf("qCurr: %Zd \n", qCurr);
-			//gmp_printf("qNext: %Zd \n", qNext);
 			//Set forward indexs.
 			pPrev = pCurr;
 			qPrev = qCurr;
@@ -74,10 +70,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 			iCounter++; //Todo check whilel criteria.
 		}
 
-		//gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-		//gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-		//gmp_printf("Stage 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-
 		//Yaaaaaaaaaaay we found a perfect square on an even iteration! Now initiate phace two!
 		mpf_class p0f(p0), q0f(q0), q1f(q1), b0f(b0), pCurrf(pCurr), pPrevf(pPrev), 
 		qNextf(qNext), qCurrf(qCurr), qPrevf(qPrev), bCurrf(bCurr), bPrevf(bPrev), 
@@ -98,11 +90,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		mpf_pow_ui (tmpf.get_mpf_t(), p0f.get_mpf_t(), 2);
 		q1f = (k * N - tmpf) / q0f;
 
-		//gmp_printf("ANS------------------------------ \n");
-		//gmp_printf ("p0f:  %.*Ff \n", numberOfDigits, p0f);
-		//gmp_printf ("q0f:  %.*Ff \n", numberOfDigits, q0f);
-		//gmp_printf ("q1f:  %.*Ff \n", numberOfDigits, q1f);
-
 
 		pPrevf = p0f;
 		qPrevf = q0f;
@@ -117,13 +104,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 			pCurrf = bCurrf * qCurrf - pPrevf;
 
 			qNextf = qPrevf + bCurrf * (pPrevf - pCurrf);
-
-
-
-			//gmp_printf("ANS------------------------------ \n");
-			//gmp_printf ("pPrevf:  %.*Ff \n", numberOfDigits, pPrevf);
-			//gmp_printf ("qCurrf:  %.*Ff \n", numberOfDigits, qCurrf);
-			//gmp_printf ("qNextf:  %.*Ff \n", numberOfDigits, qNextf);
 
 			if(pCurrf == pPrevf){
 				break;
@@ -140,7 +120,9 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		if(candidate != N && candidate != 1){
 			//We have found a non trivial with factor! :D 
 			N = N/candidate;
-			factors->push_back(candidate);
+			trialdivision(candidate, factors);
+			break;
+
 			//gmp_printf("returning------------------------------ \n");
 		}
 
@@ -150,59 +132,3 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 	}
     return trialdivision(N, factors);
 }
-
-
-
-
-	/*
-	mpf_t p0f, q0f, q1f, b0f, pCurrf, pPrevf, qNextf, qCurrf, qPrevf, qCurrSqrtf, bCurrf, bPrevf, tmpf;
-	mpf_init(p0f);
-	mpf_init(q0f);
-	mpf_init(q1f); //The mpf_class is completely messed up so here we are...
-	mpf_init(b0f);
-	mpf_init(pCurrf);
-	mpf_init(pPrevf);
-	mpf_init(qNextf);
-	mpf_init(qCurrf);
-	mpf_init(qPrevf);
-	mpf_init(qCurrSqrtf);
-	mpf_init(bCurrf);
-	mpf_init(bPrevf);
-	mpf_init(tmpf);
-
-
-
-	mpf_set_z(qCurrf, qCurr.get_mpz_t());
-	mpf_set_z(p0f, p0.get_mpz_t());
-	mpf_set_z(pPrevf, pPrev.get_mpz_t());
-	gmp_printf ("fixed point qCurrf:  %.*Ff with %d digits\n", numberOfDigits, qCurrf, numberOfDigits);
-	gmp_printf ("fixed point p0f:  %.*Ff with %d digits\n", numberOfDigits, p0f, numberOfDigits);
-	gmp_printf ("fixed point pPrevf:  %.*Ff with %d digits\n", numberOfDigits, pPrevf, numberOfDigits);
-
-
-	
-	mpf_add (b0f, p0f, pPrevf); // b0f = p0f + pPrevf;
-	mpf_class kalle(b0f);
-
-	gmp_printf ("fixed point kalle:  %.*Ff with %d digits\n", numberOfDigits, kalle, numberOfDigits);
-	gmp_printf ("fixed point b0f:  %.*Ff with %d digits\n", numberOfDigits, b0f, numberOfDigits);
-	mpf_sqrt(qCurrSqrtf, qCurrf); // qCurrsqrtf = square root of qCurrf;
-	mpf_div(b0f, b0f, qCurrSqrtf); // b0f = b0f / qCurrsqrtf
-	//Truncate b0f;
-	mpf_mul (p0f, b0f, qCurrSqrtf);
-	*/
-
-
-
-
-	/*
-	mpf_set_z(miscMpf,qCurr.get_mpz_t());	 //Convert mpz to float
-	mpf_sqrt(qCurrSqrt.get_mpf_t(), miscMpf); //Take sqrt of flaot
-	gmp_printf ("fixed point qCurrSqrt:  %.*Ff with %d digits\n", numberOfDigits, qCurrSqrt, numberOfDigits);
-
-	b0 = p0 - pPrev; //wrong?
-	b0 = b0 / qCurrSqrt;
-	gmp_printf("b0: %Zd \n", b0);
-
-	p0 = b0 * qCurrSqrt;
-	*/
