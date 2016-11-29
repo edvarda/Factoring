@@ -1,5 +1,5 @@
 //
-//  dixon.h
+//  shanks.h
 //  Factoring
 //
 //  Created by Edvard Ahlsén on 20/11/16.
@@ -18,6 +18,7 @@
 #include "trialdivision.h"
 
 std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *factors,
-				std::chrono::time_point<std::chrono::high_resolution_clock> started);
+                                       std::chrono::time_point<std::chrono::high_resolution_clock> started,
+                                       gmp_randclass &randoCalrissian);
 
 #endif /* shanks_h */

@@ -7,17 +7,19 @@
 //
 
 #include "shanks.h"
+#include "pollard.h"
 
 std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *factors,
-                                    std::chrono::time_point<std::chrono::high_resolution_clock> started) {
-
+                                       std::chrono::time_point<std::chrono::high_resolution_clock> started,
+                                       gmp_randclass &randoCalrissian) {
+    
 	for(int param = 1 ; param < 5 ; param++){
 
 	    std::chrono::time_point<std::chrono::high_resolution_clock> deadline =
         started + std::chrono::milliseconds(10000);
 
 	    if(std::chrono::high_resolution_clock::now() > deadline){
-            throw "fail passed deadline";
+            throw "fail";
             break;
         }
 
@@ -125,16 +127,36 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		//gmp_printf("candidate: %Zd \n", candidate);
 
 		if(candidate != N && candidate != 1){
-			//We have found a non trivial with factor! :D 
-			N = N/candidate;
-			trialdivisionShanks(candidate, factors, started);
-			break;
+            ////
+            if (mpz_probab_prime_p (candidate.get_mpz_t(), 15)) {
+                factors->push_back(candidate);
+            } else { //TODO Will this throwing a "fail" result in an error?
+                //Possible mismatch between N and factors
+                mpz_class non_prime_factor(candidate); // Use pnp = p, so we still have a copy of p
+                while (true) { // TODO subject this subroutine to a deadline?
+                    // Feels unneccessary since p <= sqrt(N)
+                    try {
+                        //factors = pollardsrho(pnp, factors, randoCalrissian);
+                        factors = pollardsrho(non_prime_factor, factors, randoCalrissian);
+                        break;
+                    } catch (const char* msg) {
+                        // Just try again
+                    }
+                }
+            }
+            
+            N /= candidate; // Divide N by p, since we made sure factors contain all prime factors of p
 
+            /////
+            
+//			//We have found a non trivial with factor! :D 
+//			N = N/candidate;
+//            
+//			trialdivisionShanks(candidate, factors, started);
+//			break;
+//
 			//gmp_printf("returning------------------------------ \n");
 		}
-
-
-
 		//gmp_printf("inb4 crash \n");
 	}
     return trialdivisionShanks(N, factors, started);

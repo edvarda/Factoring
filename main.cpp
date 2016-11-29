@@ -15,8 +15,7 @@
 #include "constants.h"
 #include "trialdivision.h"
 
-//#include "pollard.h"
-//#include "dixon.h"
+#include "pollard.h"
 #include "shanks.h"
 
 //Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
@@ -54,11 +53,8 @@ int main(int argc, const char * argv[]) {
         } catch (std::invalid_argument) {
             // This happens if number is too large or formatted incorrectly
         }
+
         
-
-
-
-
         if (mpz_probab_prime_p (N.get_mpz_t(), 15)) { // N is already prime
             std::cout << N << std::endl;
         } else if (N > threshold) { // We don't even try for numbers larger than this threshold
@@ -66,22 +62,30 @@ int main(int argc, const char * argv[]) {
         } else  {
 
 
-
-
-
-
-
-
-
             std::chrono::time_point<std::chrono::high_resolution_clock> deadline =
             std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(TIME_CUTOFF);
             std::vector<mpz_class> *factors = new std::vector<mpz_class>();
             
             while (true) {
+                
+                // Shanks
                 try {
-                    //factors = pollardsrho(N, factors, randoCalrissian);
                     //gmp_printf("new number we can get stuck here The number is %Zd \n", N);
-                    factors = shanksFactorer(N, factors, start_time);
+                    factors = shanksFactorer(N, factors, start_time, randoCalrissian);
+                    for (auto it = factors->begin(); it != factors->end(); ++it) {
+                        std::cout << *it << std::endl; // Print factors
+                    }
+                    break; // Break for success
+                } catch (const char* msg) { // Catch fail messages
+                    std::cout << msg << std::endl;
+                    break; // Break for fail
+                    
+                }
+                
+                /*
+                // Pollards rho
+                try {
+                    factors = pollardsrho(N, factors, randoCalrissian);
                     if (std::chrono::high_resolution_clock::now() > deadline) { // If passed deadline
                         std::cout << "fail" << std::endl;
                         break; // Break for fail
@@ -98,6 +102,7 @@ int main(int argc, const char * argv[]) {
                         // Try again
                     }
                 }
+                */
             }
         }
         std::cout << std::endl;

@@ -36,7 +36,7 @@ std::vector<mpz_class>* trialdivisionShanks(mpz_class &N, std::vector<mpz_class>
             started + std::chrono::milliseconds(10000);
 
     if(std::chrono::high_resolution_clock::now() > deadline){
-            throw "fail shanks time";
+            throw "fail";
         }
     for (auto p : PI) {
         if (mpz_probab_prime_p (N.get_mpz_t(), 15) || p > sqrt(N)) { break; }
@@ -49,7 +49,7 @@ std::vector<mpz_class>* trialdivisionShanks(mpz_class &N, std::vector<mpz_class>
         if (mpz_probab_prime_p (N.get_mpz_t(), 15)) {
             factors->push_back(N);
         } else {
-            throw "fail trial thingy";
+            throw "fail";
         }
     }
     return factors;
