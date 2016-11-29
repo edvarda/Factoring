@@ -15,9 +15,9 @@
 #include "constants.h"
 #include "trialdivision.h"
 
-#include "pollard.h"
-#include "dixon.h"
-
+//#include "pollard.h"
+//#include "dixon.h"
+#include "shanks.h"
 
 //Compile options g++ *.cpp -o prg -std=gnu++11 -lgmpxx -lgmp
 int main(int argc, const char * argv[]) {
@@ -55,11 +55,24 @@ int main(int argc, const char * argv[]) {
             // This happens if number is too large or formatted incorrectly
         }
         
+
+
+
+
         if (mpz_probab_prime_p (N.get_mpz_t(), 15)) { // N is already prime
             std::cout << N << std::endl;
         } else if (N > threshold) { // We don't even try for numbers larger than this threshold
             std::cout << "fail" << std::endl;
         } else  {
+
+
+
+
+
+
+
+
+
             std::chrono::time_point<std::chrono::high_resolution_clock> deadline =
             std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(TIME_CUTOFF);
             std::vector<mpz_class> *factors = new std::vector<mpz_class>();
@@ -67,7 +80,12 @@ int main(int argc, const char * argv[]) {
             while (true) {
                 try {
                     //factors = pollardsrho(N, factors, randoCalrissian);
-                    factors = dixonFactorer(N, factors, randoCalrissian);
+                    //gmp_printf("new number we can get stuck here The number is %Zd \n", N);
+                    factors = shanksFactorer(N, factors, start_time);
+                    if (std::chrono::high_resolution_clock::now() > deadline) { // If passed deadline
+                        std::cout << "fail" << std::endl;
+                        break; // Break for fail
+                    }
                     for (auto it = factors->begin(); it != factors->end(); ++it) {
                         std::cout << *it << std::endl; // Print factors
                     }
