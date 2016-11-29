@@ -9,10 +9,18 @@
 #include "shanks.h"
 
 std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *factors,
-                                    gmp_randclass &randoCalrissian) {
+                                    std::chrono::time_point<std::chrono::high_resolution_clock> started) {
 
-	
 	for(int param = 1 ; param < 5 ; param++){
+
+	    std::chrono::time_point<std::chrono::high_resolution_clock> deadline =
+        started + std::chrono::milliseconds(10000);
+
+	    if(std::chrono::high_resolution_clock::now() > deadline){
+            throw "fail passed deadline";
+            break;
+        }
+
 		mpz_class k = param; //For now we just chose a k.
 		mpz_class perfectSquareCriterion = 0;
 		//Initialize p0, q0, q1 to the things they should be.
@@ -29,11 +37,9 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		mpz_sqrt(p0.get_mpz_t(), tmp.get_mpz_t());
 		
 
-
 		q0 = 1;
 		mpz_pow_ui(tmp.get_mpz_t(), p0.get_mpz_t(), 2);
 		q1 = k * N - tmp;
-
 
 
 
@@ -42,10 +48,12 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		qCurr = q1;
 		qPrev = q0;
 		bCurr = p0 + pPrev;
+		if(qCurr == 0){ //TODO see how the algorithm should handle this exception.
+			break;
+		}
 		bCurr = bCurr / qCurr;
 		pCurr = bCurr * qCurr - pPrev;
 		qNext = qPrev + bCurr * (pPrev-pCurr);
-
 		perfectSquareCriterion =  mpz_perfect_square_p(qCurr.get_mpz_t());
 		while(true){
 			perfectSquareCriterion = 0; //Reset perfectSquareCriterion;
@@ -69,7 +77,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 			}
 			iCounter++; //Todo check whilel criteria.
 		}
-
 		//Yaaaaaaaaaaay we found a perfect square on an even iteration! Now initiate phace two!
 		mpf_class p0f(p0), q0f(q0), q1f(q1), b0f(b0), pCurrf(pCurr), pPrevf(pPrev), 
 		qNextf(qNext), qCurrf(qCurr), qPrevf(qPrev), bCurrf(bCurr), bPrevf(bPrev), 
@@ -120,7 +127,7 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		if(candidate != N && candidate != 1){
 			//We have found a non trivial with factor! :D 
 			N = N/candidate;
-			trialdivision(candidate, factors);
+			trialdivisionShanks(candidate, factors, started);
 			break;
 
 			//gmp_printf("returning------------------------------ \n");
@@ -130,5 +137,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 
 		//gmp_printf("inb4 crash \n");
 	}
-    return trialdivision(N, factors);
+    return trialdivisionShanks(N, factors, started);
 }
+//Difficult input 23632234, 12321.

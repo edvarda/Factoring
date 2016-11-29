@@ -13,10 +13,11 @@
 #include <vector>
 #include <gmpxx.h>
 #include <time.h>
+#include <chrono>
 #include "constants.h"
 #include "trialdivision.h"
 
 std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *factors,
-                                    gmp_randclass &randoCalrissian);
+				std::chrono::time_point<std::chrono::high_resolution_clock> started);
 
 #endif /* shanks_h */

@@ -80,7 +80,12 @@ int main(int argc, const char * argv[]) {
             while (true) {
                 try {
                     //factors = pollardsrho(N, factors, randoCalrissian);
-                    factors = shanksFactorer(N, factors, randoCalrissian);
+                    //gmp_printf("new number we can get stuck here The number is %Zd \n", N);
+                    factors = shanksFactorer(N, factors, start_time);
+                    if (std::chrono::high_resolution_clock::now() > deadline) { // If passed deadline
+                        std::cout << "fail" << std::endl;
+                        break; // Break for fail
+                    }
                     for (auto it = factors->begin(); it != factors->end(); ++it) {
                         std::cout << *it << std::endl; // Print factors
                     }
