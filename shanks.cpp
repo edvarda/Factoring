@@ -9,10 +9,16 @@
 #include "shanks.h"
 #include "pollard.h"
 
+
+
+// This function factors a number "N" into factors "factors".
+//The functions requires a starting time for the entire process and a gmp random generator class so that it can pass it through to other functions if need be. 
 std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *factors,
                                        std::chrono::time_point<std::chrono::high_resolution_clock> started,
                                        gmp_randclass &randoCalrissian) {
     
+
+    //We try all parameters k from 1 to the number specified in the loop.
 	for(int param = 1 ; param < 5 ; param++){
 
 	    std::chrono::time_point<std::chrono::high_resolution_clock> deadline =
@@ -23,22 +29,17 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
             break;
         }
 
-		mpz_class k = param; //For now we just chose a k.
-		mpz_class perfectSquareCriterion = 0;
+		mpz_class k = param; //We choose a k.
+		mpz_class perfectSquareCriterion = 0; //Just a criterion checking if we are done with the first loop.
+		//int numberOfDigits = 7; //For debug print purposes.
+
+
 		//Initialize p0, q0, q1 to the things they should be.
 		mpz_class candidate, p0, q0, q1, b0, pCurr, pPrev, qNext, qCurr, qPrev, bCurr, bPrev, tmp, iCounter;
-		mpf_class qCurrSqrt;
-
-		mpz_t miscMpz;
-		mpz_init(miscMpz);
-		mpf_t miscMpf;
-		mpf_init(miscMpf);
-		int numberOfDigits = 7;
 
 		tmp = k * N;
 		mpz_sqrt(p0.get_mpz_t(), tmp.get_mpz_t());
 		
-
 		q0 = 1;
 		mpz_pow_ui(tmp.get_mpz_t(), p0.get_mpz_t(), 2);
 		q1 = k * N - tmp;
@@ -50,7 +51,7 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		qCurr = q1;
 		qPrev = q0;
 		bCurr = p0 + pPrev;
-		if(qCurr == 0){ //TODO see how the algorithm should handle this exception.
+		if(qCurr == 0){ //There are sitation when q1 turn out to be 0 and we must then stop the algorithm and try another multiplier k.
 			break;
 		}
 		bCurr = bCurr / qCurr;
@@ -73,21 +74,22 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 
 			
 			perfectSquareCriterion =  mpz_perfect_square_p(qCurr.get_mpz_t());
-			if(perfectSquareCriterion != 0 && (iCounter%2) == 0){
-				//gmp_printf("perfectSquareCriterion and even iteration fullfilled \n");
+			if(perfectSquareCriterion != 0 && (iCounter%2) == 0){ //We break if qCurr is a perfect square and we are on an even i.
 				break;
 			}
-			iCounter++; //Todo check whilel criteria.
+			iCounter++;
 		}
+
+
 		//Yaaaaaaaaaaay we found a perfect square on an even iteration! Now initiate phace two!
 		mpf_class p0f(p0), q0f(q0), q1f(q1), b0f(b0), pCurrf(pCurr), pPrevf(pPrev), 
 		qNextf(qNext), qCurrf(qCurr), qPrevf(qPrev), bCurrf(bCurr), bPrevf(bPrev), 
-		qCurrSqrtf, tmpf;
+		qCurrSqrtf, tmpf; //Since we have now have to deal with floats, we switch from mpz to mpf to be able to handle floats.
 
 
 
-		//Initializing stuff for second loop.
-		b0f = p0f - pPrevf; //Prolly wrong.
+		//Initializing variables for second loop.
+		b0f = p0f - pPrevf;
 		mpf_sqrt(qCurrSqrtf.get_mpf_t(), qCurrf.get_mpf_t());
 		b0f /= qCurrSqrtf;
 		b0f = floor(b0f);
@@ -105,8 +107,7 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		qCurrf = q1f;
 
 		//Second loop.
-		//while(true){
-		for(int i = 0 ; i < 4 ; i++) {
+		while(true){
 			bCurrf = (p0f + pPrevf) / qCurrf;
 			bCurrf = floor(bCurrf);
 
@@ -122,10 +123,12 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 			qPrevf = qCurrf;
 			qCurrf = qNextf;
 		}
-		mpz_class elementToTry(pCurrf);
-		mpz_gcd (candidate.get_mpz_t(), N.get_mpz_t(), elementToTry.get_mpz_t());
+		mpz_class elementToTry(pCurrf); //Converting element.
+		mpz_gcd (candidate.get_mpz_t(), N.get_mpz_t(), elementToTry.get_mpz_t()); //Runs gcd on N and elementToTry, puts the answer in candidate.
 		//gmp_printf("candidate: %Zd \n", candidate);
 
+
+		//Here we check if candidate is a non-trivial factor.
 		if(candidate != N && candidate != 1){
             ////
             if (mpz_probab_prime_p (candidate.get_mpz_t(), 15)) {
@@ -159,6 +162,6 @@ std::vector<mpz_class>* shanksFactorer(mpz_class &N, std::vector<mpz_class> *fac
 		}
 		//gmp_printf("inb4 crash \n");
 	}
-    return trialdivisionShanks(N, factors, started);
+    return pollardsrho(N, factors, started);
 }
 //Difficult input 23632234, 12321.
