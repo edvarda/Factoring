@@ -17,14 +17,15 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	std::vector<mpz_class> P = {2, 3, 5, 7};
 
 	int numberOFRelations = P.size()+1;
-	std::vector<mpz_class> *allZ = new std::vector<mpz_class>(numberOFRelations);
-	std::vector<mpz_class> *allPZ = new std::vector<mpz_class>(numberOFRelations);
-	std::vector<std::vector<mpz_class> > vMatrix(P.size(), std::vector<mpz_class>(numberOFRelations));
+	std::vector<mpz_class> *allZ = new std::vector<mpz_class>(numberOFRelations); //Vector to gather all the z's
+	std::vector<mpz_class> *allPZ = new std::vector<mpz_class>(numberOFRelations); //Vector to gather all the p(z)'s
+	std::vector<std::vector<mpz_class> > vMatrix(P.size(), std::vector<mpz_class>(numberOFRelations)); //Matrix for gauss elemination
+
 	//Next, we search for positive integers z such that z^2 mod N is B-smooth.
 	for(int pairs = 0 ; pairs < numberOFRelations ;){
 		gmp_printf("---------------------------------- \n");
 		mpz_class z, pz, pzTemp;
-		z = randoCalrissian.get_z_range(N); //Perhaps these should be only up to sqrt(N)?
+		z = randoCalrissian.get_z_range(N); //Random a number z
 		mpz_powm (pz.get_mpz_t(), z.get_mpz_t(), mpz_class(2).get_mpz_t(), N.get_mpz_t());
 
 
@@ -32,6 +33,8 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 		pzTemp = pz;
 		factorsOfPZ = trialdivision(pzTemp, factorsOfPZ); //There is faster way to check it is B-smooth than to factorize the entire number.
 		mpz_class biggestFactorInPZ = 1;
+
+		//Next we check how big the biggest factor in pz is.
 		for (auto it = factorsOfPZ->begin(); it != factorsOfPZ->end(); ++it) {
 			if (*it > biggestFactorInPZ){
 				biggestFactorInPZ = *it;
@@ -40,6 +43,7 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	    }
 	    gmp_printf("biggest factor in PZ: %Zd \n", biggestFactorInPZ);
 
+	    //We add exponents of all the factors in the factorbase to the matrix.
 	    if(biggestFactorInPZ <= B && biggestFactorInPZ != 1){
 	    	gmp_printf("pz is B-smooth!!! \n");
 	    	allZ->push_back(z);
@@ -48,6 +52,8 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	    	biggestFactorInPZ = 0;
 
 	    	gmp_printf("incrementing the matrix \n");
+
+	    	//Cases which whould have been expanded to a dynamic form if it would have worked.
 	    	for (auto it = factorsOfPZ->begin(); it != factorsOfPZ->end(); ++it) {
 				if (*it == 2){
 	    			vMatrix[0][pairs]++;
@@ -62,7 +68,7 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	    			vMatrix[3][pairs]++;
 				}
 		    }
-		    gmp_printf("debugg \n");
+
 			for(int i = 0 ; i < P.size() ; i++){
 				for(int j = 0 ; j < numberOFRelations ; j++){
 					gmp_printf("%Zd; " , vMatrix[i][j]);
@@ -100,7 +106,15 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 		
 		int rowGaussIndex = -1;
 		std::vector<int> usedRow (vMatrix.size());
-		gmp_printf("debugg1 \n");
+
+
+
+
+
+		//In this messy section we choose a row which has a 1 in the first column. Thereafter we gauss away all other rows which has a 1 in that column.
+		//We repeat this process for each columns.
+
+
 
 	    for(int i = 0 ; i < vMatrix.size() ; i++){
 	    	for(int j = 0 ; j < vMatrix.size() ; j++){
@@ -141,6 +155,8 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 			}
 		    rowGaussIndex = -1;
 	    }
+
+
 	    gmp_printf("Now hopefully Gaussed \n");
 		for(int i = 0 ; i < vMatrix.size() ; i++){
 			for(int j = 0 ; j < vMatrix[0].size() ; j++){
@@ -160,7 +176,9 @@ std::vector<mpz_class>* dixonFactorer(mpz_class &N, std::vector<mpz_class> *fact
 	    }
 
 
+	    //Now we have a gaussed matrix..
 
+	    //Discontinued algorith.
 
 	   
 
